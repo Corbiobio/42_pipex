@@ -6,7 +6,7 @@
 /*   By: edarnand <edarnand@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/21 12:08:06 by edarnand          #+#    #+#             */
-/*   Updated: 2025/02/05 11:45:23 by edarnand         ###   ########.fr       */
+/*   Updated: 2025/02/05 19:12:44 by edarnand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,11 @@ void	execute(char *cmd_str, char **paths)
 
 	cmd = ft_split(cmd_str, ' ');
 	if (cmd == NULL)
-		perror("Failed to split cmd");
+	{
+		perror("Failed to split");//dprintf ????
+		free_double_pt(paths);
+		exit(EXIT_FAILURE);
+	}
 	i = 0;
 	while (paths[i] != NULL)
 	{
@@ -74,72 +78,80 @@ void	execute(char *cmd_str, char **paths)
 		i++;
 		free(path);
 	}
+	//perror("Command not found" + cmd[0]);//dprintf ????
 	free_double_pt(cmd);
+	free_double_pt(paths);
+	exit(EXIT_FAILURE);
 }
 
-void	pipex(char **av, char **paths)
+void	close_all_fd(int fd1, int fd2, int fd3, int fd4)
+{
+	if (fd1 != -1)
+		close(fd1);
+	if (fd2 != -1)
+		close(fd2);
+	if (fd3 != -1)
+		close(fd3);
+	if (fd4 != -1)
+		close(fd4);
+}
+
+void	pipex(int ac, char **av, char **paths)
 {
 	int	i;
 	int	pid;
 	int	pipe_fd[2];
-	int	next_read_fd  = -1;
-	(void)paths;
-	(void)av;
+	int	next_read_fd;
 
-	i = 0;
-	while (i < 3)
+	i = 1;
+	while (i < ac - 1)
 	{
-		pipe(pipe_fd);
+		pipe(pipe_fd);//protect
 		pid = fork();//protect
+		if (pid < 0)
+			return ;//pas sure
 		if (pid == 0)
 		{
-			if (i == 0)
+			if (i == 1)
 			{
-				int	file1 = open("input", O_RDONLY); //protect
-				dup2(file1, STDIN_FILENO);
-				dup2(pipe_fd[1], STDOUT_FILENO);
-				close(file1);
-				close(pipe_fd[0]);
-				close(pipe_fd[1]);
-				execute("cat", paths);
+				int	file1 = open(av[0], O_RDONLY); //protect
+				dup2(file1, STDIN_FILENO);//protect
+				dup2(pipe_fd[1], STDOUT_FILENO);//protect
+				close_all_fd(file1, pipe_fd[0], pipe_fd[1], -1);
+				execute(av[1], paths);
 				//protect if exev fail
 			}
-			else if (i == 1)
+			else if (av[i + 2] == NULL)
 			{
-				dup2(next_read_fd, STDIN_FILENO);
-				dup2(pipe_fd[1], STDOUT_FILENO);
-				close(next_read_fd);
-				close(pipe_fd[0]);
-				close(pipe_fd[1]);
-				execute("wc -l", paths);
-			}
-			else if (i == 2)
-			{
-				int	file2 = open("output", O_WRONLY | O_CREAT | O_APPEND); //protect | replace append by trunc
-				dup2(next_read_fd, STDIN_FILENO);
-				dup2(file2, STDOUT_FILENO);
-				close(file2);
-				close(next_read_fd);
-				close(pipe_fd[0]);
-				close(pipe_fd[1]);
-				execute("wc -m", paths);
+				int	file2 = open(av[i + 1], O_WRONLY | O_CREAT | O_APPEND); //protect | replace append by trunc
+				dup2(next_read_fd, STDIN_FILENO);//protect
+				dup2(file2, STDOUT_FILENO);//protect
+				close_all_fd(file2, pipe_fd[0], pipe_fd[1], next_read_fd);
+				execute(av[i], paths);
 				//protect if exev fail
 			}
+			else
+			{
+				dup2(next_read_fd, STDIN_FILENO);//protect
+				dup2(pipe_fd[1], STDOUT_FILENO);//protect
+				close_all_fd(pipe_fd[0], pipe_fd[1], next_read_fd, -1);
+				execute(av[i], paths);
+				//protect if exev fail
+			}
+			free_double_pt(paths);
+			exit(EXIT_FAILURE);
 		}
-		else if (pid > 0)
+		else
 		{
-			if (i != 0)
+			if (i != 1)
 				close(next_read_fd);
 			next_read_fd = pipe_fd[0];
-			if (i == 2)//if last close all
+			if (i == ac - 2)//if last close all
 				close(pipe_fd[0]);
 			close(pipe_fd[1]);
 		}
 		i++;
 	}
-	int t = wait(NULL);
-	while (t > 0)
-		t = wait(NULL);
 }
 
 int	main(int ac, char **av, char **env)
@@ -155,7 +167,8 @@ int	main(int ac, char **av, char **env)
 		paths = ft_split(find_paths_in_env(env), ':');
 		if (paths == NULL)
 			exit(EXIT_FAILURE);
-		pipex(av, paths);
+		pipex(ac, av, paths);
+		while (wait(NULL) > 0);
 		free_double_pt(paths);
 	}
 	return (EXIT_SUCCESS);
