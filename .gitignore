@@ -1,0 +1,8 @@
+*.o
+.vscode
+a.out
+pipex
+libft.a
+test*
+input*
+output*
