@@ -13,7 +13,8 @@ LIB_DIR = libft/
 
 INC = -I . -I ${LIB_DIR}
 
-PARAM = input "wc -l" "wc -m" output
+PARAM = input /usr/bin/cat "wc -l" "wc -m" "xargs -I {} echo {} digit" output
+#PARAM = inputp "sleep 5" "sleep 5" "sleep 5" "sleep 5" "sleep 5" "sleep 5" /dev/stdout
 
 %.o: %.c 
 	${CC} ${CFLAGS} ${INC} -c $< -o $@
@@ -21,9 +22,8 @@ PARAM = input "wc -l" "wc -m" output
 all:
 	${MAKE} ${NAME}
 
-${NAME}: ${OBJ} pipex.h
-	${MAKE} lib
-	${CC} ${CFLAGS} -g3 ${INC} ${OBJ} ${LIB_NAME} -o ${NAME}
+${NAME}: lib ${OBJ} pipex.h Makefile
+	${CC} ${CFLAGS} ${INC} ${OBJ} ${LIB_NAME} -o ${NAME}
 
 lib:
 	${MAKE} -C ${LIB_DIR}

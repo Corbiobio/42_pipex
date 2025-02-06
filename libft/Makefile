@@ -61,7 +61,7 @@ OBJ = ${C_FILE:.c=.o}
 all: 
 	${MAKE} ${NAME}
 
-${NAME}: ${OBJ} libft.h
+${NAME}: ${OBJ} libft.h Makefile
 	ar -rc ${NAME} ${OBJ}
 
 clean:
