@@ -6,13 +6,26 @@
 /*   By: edarnand <edarnand@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 18:50:17 by edarnand          #+#    #+#             */
-/*   Updated: 2025/02/06 18:58:30 by edarnand         ###   ########.fr       */
+/*   Updated: 2025/02/06 19:13:02 by edarnand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include <fcntl.h> //open
+#include "libft.h"
+#include <fcntl.h>
 #include <unistd.h>
+
+static void	close_all_fd(int fd1, int fd2, int fd3, int fd4)
+{
+	if (fd1 != -1)
+		close(fd1);
+	if (fd2 != -1)
+		close(fd2);
+	if (fd3 != -1)
+		close(fd3);
+	if (fd4 != -1)
+		close(fd4);
+}
 
 static void	first_child(int *pipe_fd, char **av, char **paths)
 {

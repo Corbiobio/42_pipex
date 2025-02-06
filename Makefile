@@ -5,6 +5,8 @@ CC = cc
 CFLAGS = -Wall -Werror -Wextra -g3
 
 SRC_FILE =	pipex.c\
+			child_process.c\
+			execute.c
 
 OBJ = ${SRC_FILE:.c=.o}
 

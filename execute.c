@@ -6,21 +6,14 @@
 /*   By: edarnand <edarnand@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/06 18:54:04 by edarnand          #+#    #+#             */
-/*   Updated: 2025/02/06 18:57:18 by edarnand         ###   ########.fr       */
+/*   Updated: 2025/02/06 19:09:44 by edarnand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include "pipex.h"
-#include <stdlib.h>
 #include <unistd.h>
-
-static void	perror_free_exit(char *error, char **to_free)
-{
-	perror(error);
-	free_double_pt(to_free);
-	exit(EXIT_FAILURE);
-}
+#include <stdio.h>
 
 static char	*join_cmd_to_path(char *path, char *cmd)
 {

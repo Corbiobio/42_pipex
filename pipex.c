@@ -6,7 +6,7 @@
 /*   By: edarnand <edarnand@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/21 12:08:06 by edarnand          #+#    #+#             */
-/*   Updated: 2025/02/06 18:58:04 by edarnand         ###   ########.fr       */
+/*   Updated: 2025/02/06 19:13:08 by edarnand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,13 @@
 #include "pipex.h"
 #include <sys/wait.h>
 #include <unistd.h>
+#include <stdio.h>
 
-static void	close_all_fd(int fd1, int fd2, int fd3, int fd4)
+void	perror_free_exit(char *error, char **to_free)
 {
-	if (fd1 != -1)
-		close(fd1);
-	if (fd2 != -1)
-		close(fd2);
-	if (fd3 != -1)
-		close(fd3);
-	if (fd4 != -1)
-		close(fd4);
+	perror(error);
+	free_double_pt(to_free);
+	exit(EXIT_FAILURE);
 }
 
 static char	*find_paths_in_env(char **env)
