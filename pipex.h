@@ -6,7 +6,7 @@
 /*   By: edarnand <edarnand@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/21 11:25:49 by edarnand          #+#    #+#             */
-/*   Updated: 2025/02/06 18:04:56 by edarnand         ###   ########.fr       */
+/*   Updated: 2025/02/06 19:01:55 by edarnand         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,5 +19,14 @@ typedef struct s_pipe
 	int	pipe_fd[2];
 	int	pipe_next;
 }	t_pipe;
+
+//pipex
+void	pipex(int ac, char **av, char **paths);
+
+//child_process
+void	child_process(int *pipe_fd, int i, char **av, char **paths);
+
+//execute
+void	execute(char *cmd_str, char **paths);
 
 #endif
